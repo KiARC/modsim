@@ -1,4 +1,5 @@
-from modsim import State, System
+from matplotlib import pyplot as plt
+from modsim import State, System, TimeSeries, decorate
 
 
 # Functions
@@ -17,11 +18,26 @@ def update_func(state, system):
     return State(s=s, i=i, r=r)
 
 
-def run_simulation1(system, update_func):
+def run_simulation(system, update_func):
+    s = TimeSeries()
+    i = TimeSeries()
+    r = TimeSeries()
+
     state = system.init
-    for _ in range(0, system.t_end):
+    s[0], i[0], r[0] = state
+    for t in range(0, system.t_end):
         state = update_func(state, system)
-    return state
+        s[t + 1], i[t + 1], r[t + 1] = state.s, state.i, state.r
+    return s, i, r
+
+
+def plot_results(s, i, r):
+    s.plot(label='Susceptible')
+    i.plot(label='Infected')
+    r.plot(label='Resistant')
+    decorate(xlabel='Time (days)',
+             ylabel='Fraction of population')
+    plt.show()
 
 
 # Config
@@ -31,5 +47,5 @@ gamma = 1 / 4
 
 # Main
 system = make_system(beta, gamma, initial_conditions)
-final_state = run_simulation1(system, update_func)
-print(final_state)
+s, i, r = run_simulation(system, update_func)
+plot_results(s, i, r)
