@@ -37,6 +37,11 @@ def plot_results(data):
     plt.show()
 
 
+def add_immunization(system, fraction):
+    system.init.s -= fraction
+    system.init.r += fraction
+
+
 # Config
 initial_conditions = State(s=600, i=3, r=0)
 beta = 1 / 3
@@ -45,4 +50,10 @@ gamma = 1 / 4
 # Main
 system = make_system(beta, gamma, initial_conditions)
 results = run_simulation(system, update_func)
+
+system2 = make_system(beta, gamma, initial_conditions)
+add_immunization(system2, 0.1)
+results2 = run_simulation(system2, update_func)
+
 plot_results(results)
+plot_results(results2)
