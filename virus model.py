@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-from modsim import State, System, TimeSeries, decorate
+from modsim import State, System, TimeFrame, decorate
 
 
 # Functions
@@ -19,22 +19,19 @@ def update_func(state, system):
 
 
 def run_simulation(system, update_func):
-    s = TimeSeries()
-    i = TimeSeries()
-    r = TimeSeries()
+    frame = TimeFrame(columns=system.init.index)
+    frame.loc[0] = system.init
 
-    state = system.init
-    s[0], i[0], r[0] = state
     for t in range(0, system.t_end):
-        state = update_func(state, system)
-        s[t + 1], i[t + 1], r[t + 1] = state.s, state.i, state.r
-    return s, i, r
+        frame.loc[t + 1] = update_func(frame.loc[t], system)
+
+    return frame
 
 
-def plot_results(s, i, r):
-    s.plot(label='Susceptible')
-    i.plot(label='Infected')
-    r.plot(label='Resistant')
+def plot_results(data):
+    data.s.plot(label='Susceptible')
+    data.i.plot(label='Infected')
+    data.r.plot(label='Resistant')
     decorate(xlabel='Time (days)',
              ylabel='Fraction of population')
     plt.show()
@@ -47,5 +44,5 @@ gamma = 1 / 4
 
 # Main
 system = make_system(beta, gamma, initial_conditions)
-s, i, r = run_simulation(system, update_func)
-plot_results(s, i, r)
+results = run_simulation(system, update_func)
+plot_results(results)
