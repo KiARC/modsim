@@ -42,6 +42,12 @@ def add_immunization(system, fraction):
     system.init.r += fraction
 
 
+def calc_total_infected(results, system):
+    s_0 = results.s[0]
+    s_end = results.s[system.t_end]
+    return s_0 - s_end
+
+
 # Config
 initial_conditions = State(s=600, i=3, r=0)
 beta = 1 / 3
@@ -57,3 +63,6 @@ results2 = run_simulation(system2, update_func)
 
 plot_results(results)
 plot_results(results2)
+
+print(calc_total_infected(results, system))
+print(calc_total_infected(results2, system2))
