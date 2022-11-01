@@ -64,6 +64,14 @@ def sweep_parameters(beta_array, gamma_array):
     return frame
 
 
+def plot_sweep_frame(frame):
+    for gamma in frame.columns:
+        column = frame[gamma]
+        for beta in column.index:
+            metric = column[beta]
+            plt.plot(beta / gamma, metric, '.', color='C1')
+
+
 # Config
 initial_conditions = State(s=600, i=3, r=0)
 beta = 1 / 3
@@ -73,8 +81,7 @@ gamma = 1 / 4
 beta_array = linspace(0.1, 1.1, 10)
 gamma_array = linspace(0.1, 0.7, 5)
 frame = sweep_parameters(beta_array, gamma_array)
-contour(frame)
-decorate(xlabel='Recovery rate (gamma)',
-         ylabel='Contact rate (beta)',
-         title='Contour plot, fraction infected')
+plot_sweep_frame(frame)
+decorate(xlabel='Contact number (beta/gamma)',
+         ylabel='Fraction infected')
 plt.show()
