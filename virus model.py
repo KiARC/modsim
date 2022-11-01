@@ -81,6 +81,11 @@ gamma = 1 / 4
 beta_array = linspace(0.1, 1.1, 10)
 gamma_array = linspace(0.1, 0.7, 5)
 frame = sweep_parameters(beta_array, gamma_array)
+contour(frame)
+decorate(xlabel='Recovery rate (gamma)',
+         ylabel='Contact rate (beta)',
+         title='Contour plot, fraction infected')
+plt.show()
 plot_sweep_frame(frame)
 decorate(xlabel='Contact number (beta/gamma)',
          ylabel='Fraction infected')
