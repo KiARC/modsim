@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-from modsim import State, System, TimeFrame, decorate
+from modsim import State, SweepSeries, System, TimeFrame, decorate, linspace
 
 
 # Functions
@@ -48,21 +48,26 @@ def calc_total_infected(results, system):
     return s_0 - s_end
 
 
+def sweep_immunity(fraction_array):
+    sweep = SweepSeries()
+    for fraction in fraction_array:
+        system = make_system(beta, gamma, initial_conditions)
+        add_immunization(system, fraction)
+        results = run_simulation(system, update_func)
+        sweep[fraction] = calc_total_infected(results, system)
+    return sweep
+
+
 # Config
 initial_conditions = State(s=600, i=3, r=0)
 beta = 1 / 3
 gamma = 1 / 4
 
 # Main
-system = make_system(beta, gamma, initial_conditions)
-results = run_simulation(system, update_func)
-
-system2 = make_system(beta, gamma, initial_conditions)
-add_immunization(system2, 0.1)
-results2 = run_simulation(system2, update_func)
-
-plot_results(results)
-plot_results(results2)
-
-print(calc_total_infected(results, system))
-print(calc_total_infected(results2, system2))
+fraction_array = linspace(0, 1, 10)
+infected_sweep = sweep_immunity(fraction_array)
+infected_sweep.plot(color='C2')
+decorate(xlabel='Fraction immunized',
+         ylabel='Total fraction infected',
+         title='Fraction infected vs. immunization rate')
+plt.show()
