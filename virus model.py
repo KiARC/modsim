@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-from modsim import State, SweepSeries, System, TimeFrame, decorate, linspace
+from modsim import State, SweepFrame, SweepSeries, System, TimeFrame, contour, decorate, linspace
 
 
 # Functions
@@ -57,6 +57,13 @@ def sweep_beta(beta_array, gamma):
     return sweep
 
 
+def sweep_parameters(beta_array, gamma_array):
+    frame = SweepFrame(columns=gamma_array)
+    for gamma in gamma_array:
+        frame[gamma] = sweep_beta(beta_array, gamma)
+    return frame
+
+
 # Config
 initial_conditions = State(s=600, i=3, r=0)
 beta = 1 / 3
@@ -64,11 +71,10 @@ gamma = 1 / 4
 
 # Main
 beta_array = linspace(0.1, 1.1, 10)
-gamma_array = linspace(0.1, 0.7, 4)
-for gamma in gamma_array:
-    infected_sweep = sweep_beta(beta_array, gamma)
-    label = f'gamma = {gamma}'
-    infected_sweep.plot(label=label)
-decorate(xlabel='Contact rate (beta)',
-         ylabel='Fraction infected')
+gamma_array = linspace(0.1, 0.7, 5)
+frame = sweep_parameters(beta_array, gamma_array)
+contour(frame)
+decorate(xlabel='Recovery rate (gamma)',
+         ylabel='Contact rate (beta)',
+         title='Contour plot, fraction infected')
 plt.show()
