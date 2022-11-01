@@ -48,13 +48,12 @@ def calc_total_infected(results, system):
     return s_0 - s_end
 
 
-def sweep_immunity(fraction_array):
+def sweep_beta(beta_array, gamma):
     sweep = SweepSeries()
-    for fraction in fraction_array:
+    for beta in beta_array:
         system = make_system(beta, gamma, initial_conditions)
-        add_immunization(system, fraction)
         results = run_simulation(system, update_func)
-        sweep[fraction] = calc_total_infected(results, system)
+        sweep[beta] = calc_total_infected(results, system)
     return sweep
 
 
@@ -64,10 +63,11 @@ beta = 1 / 3
 gamma = 1 / 4
 
 # Main
-fraction_array = linspace(0, 1, 10)
-infected_sweep = sweep_immunity(fraction_array)
-infected_sweep.plot(color='C2')
-decorate(xlabel='Fraction immunized',
-         ylabel='Total fraction infected',
-         title='Fraction infected vs. immunization rate')
+beta_array = linspace(0.1, 1.1, 10)
+gamma = 0.25
+infected_sweep = sweep_beta(beta_array, gamma)
+label = f'gamma = {gamma}'
+infected_sweep.plot(label=label, color='C1')
+decorate(xlabel='Contact rate (beta)',
+         ylabel='Fraction infected')
 plt.show()
