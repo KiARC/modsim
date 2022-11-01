@@ -64,10 +64,11 @@ gamma = 1 / 4
 
 # Main
 beta_array = linspace(0.1, 1.1, 10)
-gamma = 0.25
-infected_sweep = sweep_beta(beta_array, gamma)
-label = f'gamma = {gamma}'
-infected_sweep.plot(label=label, color='C1')
+gamma_array = linspace(0.1, 0.7, 4)
+for gamma in gamma_array:
+    infected_sweep = sweep_beta(beta_array, gamma)
+    label = f'gamma = {gamma}'
+    infected_sweep.plot(label=label)
 decorate(xlabel='Contact rate (beta)',
          ylabel='Fraction infected')
 plt.show()
