@@ -3,9 +3,9 @@ from modsim import State, SweepFrame, SweepSeries, System, TimeFrame, contour, d
 
 
 # Functions
-def make_system(beta, gamma, init):
+def make_system(beta, gamma, qrate, init):
     init /= init.sum()
-    return System(init=init, t_end=7 * 14, beta=beta, gamma=gamma)
+    return System(init=init, t_end=7 * 14, beta=beta, gamma=gamma, qrate=qrate)
 
 
 def update_func(state, system):
@@ -32,6 +32,7 @@ def plot_results(data):
     data.s.plot(label='Susceptible')
     data.i.plot(label='Infected')
     data.r.plot(label='Resistant')
+    data.q.plot(label="Quarantined")
     decorate(xlabel='Time (days)',
              ylabel='Fraction of population')
     plt.show()
@@ -72,21 +73,36 @@ def plot_sweep_frame(frame):
             plt.plot(beta / gamma, metric, '.', color='C1')
 
 
+def update_quarantining(state, system):
+    s, i, r, q = state.s, state.i, state.r, state.q
+    infected = system.beta * i * s
+    recovered_i = system.gamma * i
+    recovered_q = system.gamma * q
+    s -= infected
+    i += infected - recovered_i
+    r += recovered_i + recovered_q
+    quarantined = system.qrate * i
+    i -= quarantined
+    q += quarantined - recovered_q
+    return State(s=s, i=i, r=r, q=q)
+
+
 # Config
-initial_conditions = State(s=600, i=3, r=0)
+initial_conditions = State(s=600, i=3, r=0, q=0)
 beta = 1 / 3
 gamma = 1 / 4
-
-# Main
-beta_array = linspace(0.1, 1.1, 10)
-gamma_array = linspace(0.1, 0.7, 5)
-frame = sweep_parameters(beta_array, gamma_array)
-contour(frame)
-decorate(xlabel='Recovery rate (gamma)',
-         ylabel='Contact rate (beta)',
-         title='Contour plot, fraction infected')
-plt.show()
-plot_sweep_frame(frame)
-decorate(xlabel='Contact number (beta/gamma)',
-         ylabel='Fraction infected')
-plt.show()
+"""qrate=0
+"""
+qrate = 1/10
+"""
+# Main """
+results = run_simulation(
+    make_system(
+        beta,
+        gamma,
+        qrate,
+        initial_conditions
+    ),
+    update_quarantining
+)
+plot_results(results)
