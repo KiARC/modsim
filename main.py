@@ -21,3 +21,12 @@ def mix(*systems):
 
 def update(system, t_env):
     system.t = system.r*(system.t-t_env)
+
+
+def simulate(system, t_env, steps):
+    time_series = TimeSeries()
+    time_series[0] = system.t
+    for i in range(1,steps):
+        update(system, t_env)
+        time_series[i] = system.t
+    return time_series
