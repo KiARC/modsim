@@ -33,8 +33,10 @@ def simulate(system, t_end):
     return time_series
 
 
-def plot(ts):
-    ts.plot(label="Coffee and Milk Temperature")
+def plot(*sets):
+    for set in sets:
+        ts, label = set
+        ts.plot(label=label)
     decorate(xlabel='Time (minutes)',
              ylabel='Degrees Celsius')
     plt.show()
@@ -47,6 +49,13 @@ t_env = 30
 steps = 30
 
 mix = mix(coffee, milk)
-system = setup_system(mix, t_env)
-ts = simulate(system, steps)
-plot(ts)
+
+system1 = setup_system(mix, t_env)
+system2 = setup_system(coffee, t_env)
+system3 = setup_system(milk, t_env)
+
+mixSim = simulate(system1, steps)
+coffeeSim = simulate(system2, steps)
+milkSim = simulate(system3, steps)
+
+plot((mixSim, "Mix"), (coffeeSim, "Coffee"), (milkSim, "Milk"))
