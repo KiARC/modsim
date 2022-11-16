@@ -21,7 +21,7 @@ def setup_system(system, t_env):
 
 
 def update(system):
-    system.t = system.r * (system.t - system.t_env)
+    system.t -= system.r * (system.t - system.t_env)
 
 
 def simulate(system, t_end):
