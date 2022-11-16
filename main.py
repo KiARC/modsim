@@ -17,3 +17,7 @@ def mix(*systems):
         r += system.v * system.r
     r /= total_volume
     return System(temperature, total_volume, r)
+
+
+def update(system, t_env):
+    system.t = system.r*(system.t-t_env)
