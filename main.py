@@ -1,4 +1,4 @@
-from modsim import System, TimeSeries
+from modsim import System, TimeSeries, plt
 
 
 def mix(*systems):
@@ -13,21 +13,30 @@ def mix(*systems):
     for system in systems:
         r += system.v * system.r
     r /= total_volume
-    return System(temperature, total_volume, r)
+    return System(t=temperature, v=total_volume, r=r)
 
 
-def update(system, t_env):
-    system.t = system.r * (system.t - t_env)
+def setup_system(system, t_env):
+    return System(t=system.t, r=system.r, v=system.v, t_env=t_env)
 
 
-def simulate(system, t_env, steps):
+def update(system):
+    system.t = system.r * (system.t - system.t_env)
+
+
+def simulate(system, t_end):
     time_series = TimeSeries()
     time_series[0] = system.t
-    for i in range(1, steps):
-        update(system, t_env)
+    for i in range(1, t_end):
+        update(system)
         time_series[i] = system.t
     return time_series
 
 
 coffee = System(t=90, r=0.01, v=350)
 milk = System(t=5, r=0.061086056, v=50)
+t_env = 30
+steps = 30
+ts = simulate(setup_system(mix(coffee, milk), t_env), steps)
+ts.plot()
+plt.show()
