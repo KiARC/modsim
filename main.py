@@ -1,4 +1,4 @@
-from modsim import System, TimeSeries, plt
+from modsim import System, TimeSeries, decorate, plt
 
 
 def mix(*systems):
@@ -33,10 +33,20 @@ def simulate(system, t_end):
     return time_series
 
 
+def plot(ts):
+    ts.plot(label="Coffee and Milk Temperature")
+    decorate(xlabel='Time (minutes)',
+             ylabel='Degrees Celsius')
+    plt.show()
+
+
+# Config
 coffee = System(t=90, r=0.01, v=350)
 milk = System(t=5, r=0.061086056, v=50)
 t_env = 30
 steps = 30
-ts = simulate(setup_system(mix(coffee, milk), t_env), steps)
-ts.plot()
-plt.show()
+
+mix = mix(coffee, milk)
+system = setup_system(mix, t_env)
+ts = simulate(system, steps)
+plot(ts)
