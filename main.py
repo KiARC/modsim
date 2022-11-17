@@ -2,6 +2,7 @@ from modsim import System, TimeSeries, decorate, plt
 
 
 def mix(*systems):
+    """Mix together multiple systems"""
     a = 0
     # Mix Temperatures
     for system in systems:
@@ -24,10 +25,13 @@ def mix(*systems):
 
 
 def update(system):
+    """Calculate temperature change in a single step"""
     system.t -= system.r * (system.t - system.t_env)
+    # Might it be better to add heat lost to the environment so that conservation of energy is applied properly?
 
 
 def simulate(system, t_end, offset=0):
+    """Simulate the system for t_end steps starting from step offset"""
     time_series = TimeSeries()
     time_series[offset] = system.t
     for i in range(offset + 1, t_end + offset):
@@ -37,6 +41,7 @@ def simulate(system, t_end, offset=0):
 
 
 def plot(*sets):
+    """Plot tuples consisting of a TimeSeries and a string"""
     for set in sets:
         ts, label = set
         ts.plot(label=label)
@@ -57,6 +62,3 @@ mix = mix(coffee, milk)  # Mix systems together
 mixSim = simulate(mix, mix_point, mix_point)  # Simulate mix for the same amount of time, starting at the mix_point
 
 plot((mixSim, "Mix"), (coffeeSim, "Coffee"), (milkSim, "Milk"))  # Plot results
-mixSim = simulate(mixSys, mix_point, mix_point)
-
-plot((mixSim, "Mix"), (coffeeSim, "Coffee"), (milkSim, "Milk"))
